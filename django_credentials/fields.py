@@ -5,8 +5,10 @@ class EncryptedField(models.TextField):
 
     def contribute_to_class(self, cls, name, virtual_only=False):
         super(EncryptedField, self).contribute_to_class(cls, name, virtual_only)
-        setattr(cls, 'encrypt_%s' % self.name, curry(cls._encrypt_FIELD, field=self))
-        setattr(cls, 'decrypt_%s' % self.name, curry(cls._decrypt_FIELD, field=self))
+        if hasattr(cls, '_encrypt_FIELD'):
+            # Ensures we get around an issue with South trying to create a model using builtin type() 
+            setattr(cls, 'encrypt_%s' % self.name, curry(cls._encrypt_FIELD, field=self))
+            setattr(cls, 'decrypt_%s' % self.name, curry(cls._decrypt_FIELD, field=self))
 
 try:
     from south.modelsinspector import add_introspection_rules

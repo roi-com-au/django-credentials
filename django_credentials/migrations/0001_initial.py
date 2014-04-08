@@ -8,15 +8,9 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'EncryptedModel'
-        db.create_table(u'django_credentials_encryptedmodel', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal(u'django_credentials', ['EncryptedModel'])
-
         # Adding model 'BaseCredential'
         db.create_table(u'django_credentials_basecredential', (
-            (u'encryptedmodel_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['django_credentials.EncryptedModel'], unique=True, primary_key=True)),
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('status', self.gf('django.db.models.fields.CharField')(default='active', max_length=255)),
         ))
@@ -47,9 +41,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Deleting model 'EncryptedModel'
-        db.delete_table(u'django_credentials_encryptedmodel')
-
         # Deleting model 'BaseCredential'
         db.delete_table(u'django_credentials_basecredential')
 
@@ -65,14 +56,10 @@ class Migration(SchemaMigration):
 
     models = {
         u'django_credentials.basecredential': {
-            'Meta': {'object_name': 'BaseCredential', '_ormbases': [u'django_credentials.EncryptedModel']},
-            u'encryptedmodel_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['django_credentials.EncryptedModel']", 'unique': 'True', 'primary_key': 'True'}),
+            'Meta': {'object_name': 'BaseCredential'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '255'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        u'django_credentials.encryptedmodel': {
-            'Meta': {'object_name': 'EncryptedModel'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         u'django_credentials.ftpuser': {
             'Meta': {'object_name': 'FtpUser', '_ormbases': [u'django_credentials.UserPassword']},

@@ -17,3 +17,6 @@ class EncryptedFieldTestCase(TestCase):
         u = UserPassword()
         u.encrypt_password('asdf')
         self.assertEqual(u.decrypt_password(), 'asdf')
+
+    def test_get_field_by_name(self):
+        UserPassword._meta.get_field_by_name('password')
