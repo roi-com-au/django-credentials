@@ -42,8 +42,13 @@ class BaseCredential(EncryptedModel):
     
     title = models.CharField(max_length=255, help_text='A descriptive use for this user, ie.. cPanel, CMS, FTP etc..')
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, auto_now_add=True)
 
     objects = InheritanceManager()
+
+    def __unicode__(self):
+        return '%s' % self.title
 
 class UserPassword(BaseCredential):
     username = models.CharField(max_length=255, help_text='Username for this user.')

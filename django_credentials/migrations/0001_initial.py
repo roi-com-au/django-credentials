@@ -13,6 +13,8 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('status', self.gf('django.db.models.fields.CharField')(default='active', max_length=255)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, auto_now_add=True, blank=True)),
         ))
         db.send_create_signal(u'django_credentials', ['BaseCredential'])
 
@@ -57,9 +59,11 @@ class Migration(SchemaMigration):
     models = {
         u'django_credentials.basecredential': {
             'Meta': {'object_name': 'BaseCredential'},
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '255'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'blank': 'True'})
         },
         u'django_credentials.ftpuser': {
             'Meta': {'object_name': 'FtpUser', '_ormbases': [u'django_credentials.UserPassword']},
