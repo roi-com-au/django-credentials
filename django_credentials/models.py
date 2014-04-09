@@ -59,4 +59,4 @@ class FtpUser(UserPassword):
     port = models.IntegerField(default=22)
 
 class HttpUser(UserPassword):
-    url = models.URLField(max_length=255)
+    url = models.URLField(max_length=255, help_text='The login url for these credentials.')
