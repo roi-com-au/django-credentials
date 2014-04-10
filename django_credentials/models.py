@@ -7,6 +7,7 @@ from Crypto.Cipher import ARC4
 from django.conf import settings
 from django.utils.functional import curry
 from django_credentials.fields import EncryptedField
+from django_toolkit.font_awesome import Button, Icon
 
 class EncryptedModel(models.Model):
     SALT_SIZE = 8
@@ -56,7 +57,7 @@ class UserPassword(BaseCredential):
 
 class FtpUser(UserPassword):
     host = models.CharField(max_length=255)
-    port = models.IntegerField(default=22)
-
+    port = models.IntegerField(default=21)
+    
 class HttpUser(UserPassword):
     url = models.URLField(max_length=255, help_text='The login url for these credentials.')
