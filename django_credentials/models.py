@@ -50,6 +50,12 @@ class BaseCredential(EncryptedModel):
 
     def __unicode__(self):
         return '%s' % self.title
+    
+    def get_status_label_class(self):
+        if self.status == self.STATUS_ACTIVE:
+            return 'label-success'
+        elif self.status == self.STATUS_DELETED:
+            return 'label-important'
 
 class UserPassword(BaseCredential):
     username = models.CharField(max_length=255, help_text='Username for this user.')
