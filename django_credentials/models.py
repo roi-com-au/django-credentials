@@ -104,7 +104,7 @@ class FtpUser(UserPassword):
                 try:
                     f = ftplib.FTP(user=self.username, passwd=self.password)
                     f.set_pasv(pasv)
-                    c = f.connect(host=processed_host, port=int(self.port), timeout=5)
+                    c = f.connect(host=processed_host, port=int(self.port), timeout=15)
                     self.verified = True
                     self.verification_message = str(c)
                     break
