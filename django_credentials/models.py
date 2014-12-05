@@ -86,11 +86,11 @@ class FtpUser(UserPassword):
         """
         Verify the ftp details
         """
-        processed_host = self.host.replace('sftp://', '').replace('ftp://', '')
+        processed_host = self.host.replace('sftp://', '').replace('ftp://', '').replace('www.', '').replace('https://', '').replace('http://', '').strip()
 
         if 'sftp://' in self.host:
             try:
-                c = pysftp.Connection(processed_host, username=self.username, password=self.password, port=self.port)
+                c = pysftp.Connection(host=processed_host, username=self.username, password=self.password, port=self.port)
                 self.verified = True
                 self.last_verified = timezone.now()
                 self.save(update_fields=['verified', 'verification_message', 'last_verified'])
@@ -100,24 +100,20 @@ class FtpUser(UserPassword):
                 self.last_verified = timezone.now()
                 self.save(update_fields=['verified', 'verification_message', 'last_verified'])
         else:
-            try:
-                f = ftplib.FTP(user=self.username, passwd=self.password)
-                c = f.connect(host=processed_host, port=21, timeout=5)
-                self.verified = True
-                self.verification_message = str(c)
-                self.last_verified = timezone.now()
-                self.save(update_fields=['verified', 'verification_message', 'last_verified'])
-            except ftplib.all_errors as e:
-                self.verified = False
-                self.verification_message = str(e)
-                self.last_verified = timezone.now()
-                self.save(update_fields=['verified', 'verification_message', 'last_verified'])
-            except Exception as e:
-                self.verified = False
-                self.verification_message = str(e)
-                self.last_verified = timezone.now()
-                self.save(update_fields=['verified', 'verification_message', 'last_verified'])
+            for pasv in (True, False):
+                try:
+                    f = ftplib.FTP(user=self.username, passwd=self.password)
+                    f.set_pasv(pasv)
+                    c = f.connect(host=processed_host, port=self.port, timeout=5)
+                    self.verified = True
+                    self.verification_message = str(c)
+                    break
+                except Exception as e:
+                    self.verified = False
+                    self.verification_message = str(e)
 
+            self.last_verified = timezone.now()
+            self.save(update_fields=['verified', 'verification_message', 'last_verified'])
 
 class HttpUser(UserPassword):
     url = models.URLField(max_length=255, help_text='The login url for these credentials.')
