@@ -1,87 +1,63 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import django_credentials.fields
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'BaseCredential'
-        db.create_table(u'django_credentials_basecredential', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('status', self.gf('django.db.models.fields.CharField')(default='active', max_length=255)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, auto_now_add=True, blank=True)),
-        ))
-        db.send_create_signal(u'django_credentials', ['BaseCredential'])
+    dependencies = [
+    ]
 
-        # Adding model 'UserPassword'
-        db.create_table(u'django_credentials_userpassword', (
-            (u'basecredential_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['django_credentials.BaseCredential'], unique=True, primary_key=True)),
-            ('username', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('password', self.gf('django_credentials.fields.EncryptedField')()),
-        ))
-        db.send_create_signal(u'django_credentials', ['UserPassword'])
-
-        # Adding model 'FtpUser'
-        db.create_table(u'django_credentials_ftpuser', (
-            (u'userpassword_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['django_credentials.UserPassword'], unique=True, primary_key=True)),
-            ('host', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('port', self.gf('django.db.models.fields.IntegerField')(default=22)),
-        ))
-        db.send_create_signal(u'django_credentials', ['FtpUser'])
-
-        # Adding model 'HttpUser'
-        db.create_table(u'django_credentials_httpuser', (
-            (u'userpassword_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['django_credentials.UserPassword'], unique=True, primary_key=True)),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=255)),
-        ))
-        db.send_create_signal(u'django_credentials', ['HttpUser'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'BaseCredential'
-        db.delete_table(u'django_credentials_basecredential')
-
-        # Deleting model 'UserPassword'
-        db.delete_table(u'django_credentials_userpassword')
-
-        # Deleting model 'FtpUser'
-        db.delete_table(u'django_credentials_ftpuser')
-
-        # Deleting model 'HttpUser'
-        db.delete_table(u'django_credentials_httpuser')
-
-
-    models = {
-        u'django_credentials.basecredential': {
-            'Meta': {'object_name': 'BaseCredential'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '255'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'blank': 'True'})
-        },
-        u'django_credentials.ftpuser': {
-            'Meta': {'object_name': 'FtpUser', '_ormbases': [u'django_credentials.UserPassword']},
-            'host': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'port': ('django.db.models.fields.IntegerField', [], {'default': '22'}),
-            u'userpassword_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['django_credentials.UserPassword']", 'unique': 'True', 'primary_key': 'True'})
-        },
-        u'django_credentials.httpuser': {
-            'Meta': {'object_name': 'HttpUser', '_ormbases': [u'django_credentials.UserPassword']},
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '255'}),
-            u'userpassword_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['django_credentials.UserPassword']", 'unique': 'True', 'primary_key': 'True'})
-        },
-        u'django_credentials.userpassword': {
-            'Meta': {'object_name': 'UserPassword', '_ormbases': [u'django_credentials.BaseCredential']},
-            u'basecredential_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['django_credentials.BaseCredential']", 'unique': 'True', 'primary_key': 'True'}),
-            'password': ('django_credentials.fields.EncryptedField', [], {}),
-            'username': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        }
-    }
-
-    complete_apps = ['django_credentials']
+    operations = [
+        migrations.CreateModel(
+            name='BaseCredential',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('title', models.CharField(help_text=b'A descriptive use for this user, ie.. cPanel, CMS, FTP etc..', max_length=255)),
+                ('status', models.CharField(default=b'active', max_length=255, choices=[(b'active', b'Active'), (b'deleted', b'Deleted')])),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('updated', models.DateTimeField(auto_now=True, auto_now_add=True)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserPassword',
+            fields=[
+                ('basecredential_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='django_credentials.BaseCredential')),
+                ('username', models.CharField(help_text=b'Username for this user.', max_length=255)),
+                ('password', django_credentials.fields.EncryptedField()),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=('django_credentials.basecredential',),
+        ),
+        migrations.CreateModel(
+            name='HttpUser',
+            fields=[
+                ('userpassword_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='django_credentials.UserPassword')),
+                ('url', models.URLField(help_text=b'The login url for these credentials.', max_length=255)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=('django_credentials.userpassword',),
+        ),
+        migrations.CreateModel(
+            name='FtpUser',
+            fields=[
+                ('userpassword_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='django_credentials.UserPassword')),
+                ('host', models.CharField(max_length=255)),
+                ('port', models.IntegerField(default=22)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=('django_credentials.userpassword',),
+        ),
+    ]
