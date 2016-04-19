@@ -4,22 +4,25 @@ Storage and retrieval of access credentials.
 
 ## Requirements
 
-### pycrypto
-
 ```bash
-pip install pycrypto==2.6.1
+pip install -r requirements/base.txt
 ```
 
 ## Installation
 
 ```bash
-pip install git+https://bitbucket.org/alexhayes/django-credentials
+pip install git+git://github.com/roi-com-au/django-credentials
 ```
+
+## Testing
+
+Use `tox`. `pip install tox` followed by `tox` will do it.
 
 ## Thanks
 
-Thanks to roi.com.au
+Thanks to ROI.COM.AU.
 
-## Author
+## Authors
 
-Alex Hayes <alex@alution.com>
+- Alex Hayes <alex@alution.com>
+- Chris Morgan <chris.morgan@roi.com.au>
