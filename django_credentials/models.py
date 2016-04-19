@@ -100,17 +100,16 @@ class FtpUser(UserPassword):
                 self.last_verified = timezone.now()
                 self.save(update_fields=['verified', 'verification_message', 'last_verified'])
         else:
-            for pasv in (True, False):
-                try:
-                    f = ftplib.FTP(user=self.username, passwd=self.password)
-                    f.set_pasv(pasv)
-                    c = f.connect(host=processed_host, port=int(self.port), timeout=15)
-                    self.verified = True
-                    self.verification_message = str(c)
-                    break
-                except Exception as e:
-                    self.verified = False
-                    self.verification_message = str(e)
+            try:
+                f = ftplib.FTP()
+                message = f.connect(processed_host, port=int(self.port), timeout=15)
+                message += '\n' + f.login(self.username, self.decrypt_password())
+            except ftplib.Error as e:
+                self.verified = False
+                self.verification_message = e.message
+            else:
+                self.verified = True
+                self.verification_message = message
 
             self.last_verified = timezone.now()
             self.save(update_fields=['verified', 'verification_message', 'last_verified'])
