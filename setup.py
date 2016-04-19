@@ -51,11 +51,11 @@ for dirpath, dirnames, filenames in os.walk(package_dir):
         package_files.extend([os.path.join(path, f) for f in filenames])
 
 setup(name="django-credentials",
-    version="0.1.0",
+    version="0.2.0",
     description=("Storage and retrieval of access credentials."),
     author="Alex Hayes",
     author_email="alex@alution.com",
-    url="https://bitbucket.org/alexhayes/django-credentials",
+    url="https://github.com/roi-com-au/django-credentials",
     packages=packages,
     package_data=package_data
 )
