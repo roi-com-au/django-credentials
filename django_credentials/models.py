@@ -210,7 +210,7 @@ class FtpUser(UserPassword):
             # openssh/putty format, and so on and so on.
             pysftp.Connection(host=host,
                               username=self.username,
-                              password=self.password,
+                              password=self.decrypt_password(),
                               port=int(self.port))
         except Exception as e:
             return False, '{}'.format(e)
