@@ -218,16 +218,22 @@ class FtpUser(UserPassword):
             return True, None
 
     def _verify_ftp(self, host, timeout):
-        message = ''
+        # We try FTP + TLS first, then plain FTP if that fails.
+        message = ['']
+
+        def attempt(f):
+            message[0] = f.connect(host, port=int(self.port), timeout=timeout)
+            message[0] += '\n'
+            message[0] += f.login(self.username, self.decrypt_password())
+            return True, message[0]
+
         try:
-            f = ftplib.FTP()
-            message = f.connect(host, port=int(self.port), timeout=timeout)
-            message += '\n'
-            message += f.login(self.username, self.decrypt_password())
+            return attempt(ftplib.FTP_TLS())
         except Exception as e:
-            return False, '{}{}'.format(message, e)
-        else:
-            return True, message
+            try:
+                return attempt(ftplib.FTP())
+            except Exception as e:
+                return False, '{}{}'.format(message[0], e)
 
     def _verify_spurious(self, host, timeout):
         return (False, "bad data: '{}' isn't FTP and so shouldn't be here"
